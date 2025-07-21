@@ -1,0 +1,518 @@
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme Variables */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #000000;
+  --text-primary: #000000;
+  --text-secondary: #ffffff;
+  --border-color: #000000;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dark {
+  --bg-primary: #000000;
+  --bg-secondary: #ffffff;
+  --text-primary: #ffffff;
+  --text-secondary: #000000;
+  --border-color: #ffffff;
+  --glass-bg: rgba(0, 0, 0, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Glass Morphism Components */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.5s ease-out;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover::before {
+  left: 100%;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Button Styles */
+.btn-glass {
+  @apply rounded-full px-8 py-4 font-semibold transition-all duration-300 ease-out;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.btn-glass:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--glass-shadow);
+}
+
+.btn-glass:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-primary {
+  @apply rounded-full px-8 py-4 font-semibold transition-all duration-300 ease-out;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-secondary {
+  @apply rounded-full px-8 py-4 font-semibold transition-all duration-300 ease-out;
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Card Styles */
+.app-card {
+  @apply glass-card p-8;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dark .app-card {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Input Styles */
+.app-input {
+  @apply w-full px-6 py-4 rounded-full border-2 transition-all duration-300 ease-out;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+}
+
+.app-input:focus {
+  outline: none;
+  transform: scale(1.02);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--text-primary);
+}
+
+.app-input::placeholder {
+  color: var(--text-primary);
+  opacity: 0.5;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  @apply fixed top-6 right-6 z-50 w-14 h-14 rounded-full;
+  @apply flex items-center justify-center cursor-pointer;
+  @apply transition-all duration-300 ease-out;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: #000;
+}
+
+.dark .theme-toggle {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .theme-toggle:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar Styles */
+.app-sidebar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .app-sidebar {
+  background: rgba(0, 0, 0, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.app-sidebar-nav {
+  padding: 0 1rem;
+  position: relative;
+}
+
+.app-sidebar-nav:hover .app-sidebar-item:not(:hover) {
+  opacity: 0.4;
+  filter: blur(1px);
+  transform: scale(0.98);
+}
+
+.app-sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  margin: 0.125rem 0;
+  position: relative;
+  z-index: 1;
+  width: calc(100% - 0.5rem);
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  gap: 0.5rem;
+}
+
+.app-sidebar-item:hover {
+  transform: scale(1.02);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  opacity: 1 !important;
+  filter: none !important;
+  z-index: 10;
+}
+
+.dark .app-sidebar-item:hover {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+}
+
+.app-sidebar-item.active {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.app-sidebar-item.active:hover {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+/* User section in sidebar */
+.app-sidebar .glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.dark .app-sidebar .glass-card {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar .glass-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+}
+
+.dark .app-sidebar .glass-card:hover {
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* User popup styles */
+.user-popup {
+  animation: popupFadeIn 0.2s ease-out;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.user-popup .glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 
+              0 0 0 1px rgba(255, 255, 255, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.dark .user-popup .glass-card {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 
+              0 0 0 1px rgba(255, 255, 255, 0.1),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Animated Background */
+.animated-bg {
+  background: linear-gradient(-45deg, #ffffff, #fafafa, #ffffff, #f5f5f5);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+.dark .animated-bg {
+  background: linear-gradient(-45deg, #000000, #0a0a0a, #000000, #050505);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animations */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.delay-1000 {
+  animation-delay: 1s;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.4s ease-out;
+}
+
+/* Button animation classes */
+.app-button-primary {
+  border-radius: 9999px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-button-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.app-button-secondary {
+  border-radius: 9999px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-button-secondary:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.app-sidebar-item:hover {
+  transform: translateX(8px) scale(1.02);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+}
+
+.app-sidebar-item-active {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
