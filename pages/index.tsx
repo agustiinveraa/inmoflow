@@ -133,7 +133,7 @@ export default function Login() {
               placeholder="tu@email.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none transition-all duration-300"
+              className="w-full px-4 py-3 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none transition-all duration-300"
             />
           </div>
           
@@ -146,7 +146,7 @@ export default function Login() {
               placeholder="••••••••"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none transition-all duration-300"
+              className="w-full px-4 py-3 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none transition-all duration-300"
             />
           </div>
           
@@ -162,7 +162,7 @@ export default function Login() {
           
           <button 
             onClick={signIn}
-            className="w-full py-4 px-6 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-lg transition-all duration-300 hover:bg-black/80 dark:hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20"
+            className="w-full py-4 px-6 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-full transition-all duration-300 hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20"
           >
             Iniciar sesión
           </button>

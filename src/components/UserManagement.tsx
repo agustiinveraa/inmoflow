@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { getUserAgencyId, isAgencyAdmin } from '../lib/agencyHelpers';
 import { Icons } from './Icons';
+import { useEntranceAnimation, useModalAnimation, useStaggerAnimation, useButtonAnimation, useFormAnimation } from '../hooks/useGSAP';
 
 interface User {
   id: string;
@@ -17,6 +18,12 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  
+  // GSAP Animation hooks
+  const pageRef = useEntranceAnimation();
+  const usersListRef = useStaggerAnimation([users.length]);
+  const createUserButtonRef = useButtonAnimation();
+  const formRef = useFormAnimation();
   
   // Form states
   const [email, setEmail] = useState('');
@@ -194,7 +201,7 @@ export default function UserManagement() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-lg bg-white dark:bg-black text-black dark:text-white"
+                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-full bg-white dark:bg-black text-black dark:text-white"
                   required
                 />
               </div>
@@ -207,7 +214,7 @@ export default function UserManagement() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-lg bg-white dark:bg-black text-black dark:text-white"
+                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-full bg-white dark:bg-black text-black dark:text-white"
                   required
                 />
               </div>
@@ -220,7 +227,7 @@ export default function UserManagement() {
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-lg bg-white dark:bg-black text-black dark:text-white"
+                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-full bg-white dark:bg-black text-black dark:text-white"
                   required
                 />
               </div>
@@ -233,7 +240,7 @@ export default function UserManagement() {
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-lg bg-white dark:bg-black text-black dark:text-white"
+                  className="w-full p-3 border border-black/10 dark:border-white/10 rounded-full bg-white dark:bg-black text-black dark:text-white"
                 />
               </div>
               

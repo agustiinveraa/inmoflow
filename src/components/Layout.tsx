@@ -3,6 +3,7 @@ import { User } from '@supabase/supabase-js';
 import { Icons } from './Icons';
 import { useProfile } from '../hooks/useProfile';
 import { isAgencyAdmin } from '../lib/agencyHelpers';
+import { useModalAnimation } from '../hooks/useGSAP';
 
 interface LayoutProps {
   children: ReactNode;
@@ -16,6 +17,9 @@ export default function Layout({ children, user, currentPage, onPageChange }: La
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const { profile, loading: profileLoading } = useProfile(user);
+  
+  // GSAP Animation hooks for feedback modal
+  const { overlayRef, modalRef } = useModalAnimation(isFeedbackOpen);
   
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -116,13 +120,19 @@ export default function Layout({ children, user, currentPage, onPageChange }: La
         <>
           {/* Backdrop */}
           <div 
-            className="fixed inset-0 bg-black/50 z-50" 
+            ref={overlayRef as React.RefObject<HTMLDivElement>}
+            className="fixed inset-0 bg-black/50 dark:bg-black/50 backdrop-blur-sm z-50" 
             onClick={() => setIsFeedbackOpen(false)}
+            style={{ opacity: 0 }} // Start invisible for GSAP
           ></div>
           
           {/* Popup */}
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-md">
+            <div 
+              ref={modalRef as React.RefObject<HTMLDivElement>}
+              className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl w-full max-w-md"
+              style={{ opacity: 0, transform: 'scale(0.9) translateY(50px)' }} // Start invisible for GSAP
+            >
               {/* Header */}
               <div className="p-6 border-b border-black/5 dark:border-white/5">
                 <div className="flex items-center justify-between">

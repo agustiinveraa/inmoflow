@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { supabase } from '../lib/supabaseClient';
 import { Icons } from './Icons';
+import Dropdown from './Dropdown';
+import { useEntranceAnimation, useModalAnimation, useStaggerAnimation, useButtonAnimation } from '../hooks/useGSAP';
 
 interface Property {
   id: string;
@@ -32,6 +34,11 @@ export default function Properties() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
+
+  // GSAP Animation hooks (sin dependencies que dependan de variables no definidas aún)
+  const pageRef = useEntranceAnimation();
+  const { overlayRef, modalRef } = useModalAnimation(showModal);
+  const addPropertyButtonRef = useButtonAnimation();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -278,6 +285,9 @@ export default function Properties() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
+  // Hook de stagger después de definir filteredProperties
+  const propertiesGridRef = useStaggerAnimation([filteredProperties.length]);
+
   const propertyTypes = [...new Set(properties.map(p => p.property_type))];
 
   if (loading && !properties.length) {
@@ -292,7 +302,7 @@ export default function Properties() {
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div ref={pageRef as React.RefObject<HTMLDivElement>} className="flex-1 overflow-auto p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -301,8 +311,10 @@ export default function Properties() {
             <p className="text-black/60 dark:text-white/60">Gestiona tu cartera inmobiliaria</p>
           </div>
           <button
+            ref={addPropertyButtonRef as React.RefObject<HTMLButtonElement>}
             onClick={() => setShowModal(true)}
-            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all"
+            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full"
+            style={{ transition: 'none' }} // Let GSAP handle animations
           >
             <Icons.Plus className="w-4 h-4" />
             <span>Nueva Propiedad</span>
@@ -318,38 +330,38 @@ export default function Properties() {
               placeholder="Buscar propiedades..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
             />
           </div>
-          <select
+          <Dropdown
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-          >
-            <option value="all">Todos los estados</option>
-            <option value="available">Disponible</option>
-            <option value="sold">Vendida</option>
-            <option value="rented">Alquilada</option>
-          </select>
-          <select
+            onChange={setFilterStatus}
+            options={[
+              { value: 'all', label: 'Todos los estados' },
+              { value: 'available', label: 'Disponible' },
+              { value: 'sold', label: 'Vendida' },
+              { value: 'rented', label: 'Alquilada' }
+            ]}
+            placeholder="Estado de la propiedad"
+          />
+          <Dropdown
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
-            className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-          >
-            <option value="all">Todos los tipos</option>
-            {propertyTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
+            onChange={setFilterType}
+            options={[
+              { value: 'all', label: 'Todos los tipos' },
+              ...propertyTypes.map(type => ({ value: type, label: type }))
+            ]}
+            placeholder="Tipo de propiedad"
+          />
           <div className="text-sm text-black/60 dark:text-white/60 flex items-center">
             {filteredProperties.length} de {properties.length} propiedades
           </div>
         </div>
 
         {/* Properties Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref={propertiesGridRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProperties.map((property) => (
-            <div key={property.id} className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+            <div key={property.id} className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl overflow-hidden hover:shadow-lg transition-shadow">
               {/* Image */}
               <div className="h-48 bg-gray-100 dark:bg-gray-800 relative">
                 {property.images && property.images.length > 0 ? (
@@ -434,8 +446,16 @@ export default function Properties() {
 
         {/* Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 dark:bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+          <div 
+            ref={overlayRef as React.RefObject<HTMLDivElement>}
+            className="fixed inset-0 bg-black/50 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+            style={{ opacity: 0 }}
+          >
+            <div 
+              ref={modalRef as React.RefObject<HTMLDivElement>}
+              className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+              style={{ opacity: 0, transform: 'scale(0.9) translateY(50px)' }}
+            >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-black dark:text-white">
                   {selectedProperty ? 'Editar Propiedad' : 'Nueva Propiedad'}
@@ -473,7 +493,7 @@ export default function Properties() {
                       required
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                   </div>
                   <div>
@@ -485,7 +505,7 @@ export default function Properties() {
                       required
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                   </div>
                 </div>
@@ -499,7 +519,7 @@ export default function Properties() {
                     required
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                   />
                 </div>
 
@@ -511,7 +531,7 @@ export default function Properties() {
                     rows={3}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                   />
                 </div>
 
@@ -520,35 +540,36 @@ export default function Properties() {
                     <label className="block text-sm font-medium text-black dark:text-white mb-2">
                       Tipo de Propiedad *
                     </label>
-                    <select
-                      required
+                    <Dropdown
                       value={formData.property_type}
-                      onChange={(e) => setFormData({ ...formData, property_type: e.target.value })}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-                    >
-                      <option value="">Seleccionar tipo</option>
-                      <option value="piso">Piso</option>
-                      <option value="casa">Casa</option>
-                      <option value="chalet">Chalet</option>
-                      <option value="ático">Ático</option>
-                      <option value="local">Local Comercial</option>
-                      <option value="oficina">Oficina</option>
-                      <option value="terreno">Terreno</option>
-                    </select>
+                      onChange={(value) => setFormData({ ...formData, property_type: value })}
+                      options={[
+                        { value: '', label: 'Seleccionar tipo' },
+                        { value: 'piso', label: 'Piso' },
+                        { value: 'casa', label: 'Casa' },
+                        { value: 'chalet', label: 'Chalet' },
+                        { value: 'ático', label: 'Ático' },
+                        { value: 'local', label: 'Local Comercial' },
+                        { value: 'oficina', label: 'Oficina' },
+                        { value: 'terreno', label: 'Terreno' }
+                      ]}
+                      placeholder="Seleccionar tipo"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-black dark:text-white mb-2">
                       Estado
                     </label>
-                    <select
+                    <Dropdown
                       value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-                    >
-                      <option value="available">Disponible</option>
-                      <option value="sold">Vendida</option>
-                      <option value="rented">Alquilada</option>
-                    </select>
+                      onChange={(value) => setFormData({ ...formData, status: value })}
+                      options={[
+                        { value: 'available', label: 'Disponible' },
+                        { value: 'sold', label: 'Vendida' },
+                        { value: 'rented', label: 'Alquilada' }
+                      ]}
+                      placeholder="Estado de la propiedad"
+                    />
                   </div>
                 </div>
 
@@ -556,18 +577,18 @@ export default function Properties() {
                   <label className="block text-sm font-medium text-black dark:text-white mb-2">
                     Cliente Propietario
                   </label>
-                  <select
+                  <Dropdown
                     value={formData.client_id}
-                    onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
-                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-                  >
-                    <option value="">Sin propietario asignado</option>
-                    {clients.map(client => (
-                      <option key={client.id} value={client.id}>
-                        {client.full_name} {client.email && `(${client.email})`}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, client_id: value })}
+                    options={[
+                      { value: '', label: 'Sin propietario asignado' },
+                      ...clients.map(client => ({
+                        value: client.id,
+                        label: `${client.full_name}${client.email ? ` (${client.email})` : ''}`
+                      }))
+                    ]}
+                    placeholder="Seleccionar propietario"
+                  />
                 </div>
 
                 <div>
@@ -582,7 +603,7 @@ export default function Properties() {
                       multiple
                       accept="image/*"
                       onChange={handleFileSelect}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                     <p className="text-xs text-black/60 dark:text-white/60 mt-1">
                       Selecciona múltiples imágenes (JPG, PNG, WebP)

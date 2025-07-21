@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Icons } from './Icons';
+import { useEntranceAnimation, useModalAnimation, useStaggerAnimation, useButtonAnimation } from '../hooks/useGSAP';
 
 interface Client {
   id: string;
@@ -17,6 +18,11 @@ export default function Clients() {
   const [showModal, setShowModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // GSAP Animation hooks
+  const pageRef = useEntranceAnimation();
+  const { overlayRef, modalRef } = useModalAnimation(showModal);
+  const addClientButtonRef = useButtonAnimation();
 
   const [formData, setFormData] = useState({
     full_name: '',
@@ -152,6 +158,9 @@ export default function Clients() {
     return matchesSearch;
   });
 
+  // Hook de stagger después de definir filteredClients
+  const clientsListRef = useStaggerAnimation([filteredClients.length]);
+
   if (loading && !clients.length) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -164,7 +173,7 @@ export default function Clients() {
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div ref={pageRef as React.RefObject<HTMLDivElement>} className="flex-1 overflow-auto p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -173,8 +182,10 @@ export default function Clients() {
             <p className="text-black/60 dark:text-white/60">Gestiona tu base de clientes</p>
           </div>
           <button
+            ref={addClientButtonRef as React.RefObject<HTMLButtonElement>}
             onClick={() => setShowModal(true)}
-            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all"
+            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full"
+            style={{ transition: 'none' }}
           >
             <Icons.Plus className="w-4 h-4" />
             <span>Nuevo Cliente</span>
@@ -190,7 +201,7 @@ export default function Clients() {
               placeholder="Buscar clientes..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+              className="w-full pl-10 pr-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white placeholder:text-black/60 dark:placeholder:text-white/60 focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
             />
           </div>
           <div className="text-sm text-black/60 dark:text-white/60 flex items-center">
@@ -199,7 +210,7 @@ export default function Clients() {
         </div>
 
         {/* Clients Table */}
-        <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl overflow-hidden">
+        <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-black/5 dark:bg-white/5">
@@ -210,7 +221,7 @@ export default function Clients() {
                   <th className="text-right py-3 px-4 font-semibold text-black dark:text-white text-sm">Acciones</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody ref={clientsListRef as React.RefObject<HTMLTableSectionElement>}>
                 {filteredClients.map((client) => (
                   <tr key={client.id} className="border-t border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4">
@@ -282,8 +293,16 @@ export default function Clients() {
 
         {/* Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 dark:bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+          <div 
+            ref={overlayRef as React.RefObject<HTMLDivElement>}
+            className="fixed inset-0 bg-black/50 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+            style={{ opacity: 0 }}
+          >
+            <div 
+              ref={modalRef as React.RefObject<HTMLDivElement>}
+              className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+              style={{ opacity: 0, transform: 'scale(0.9) translateY(50px)' }}
+            >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-black dark:text-white">
                   {selectedClient ? 'Editar Cliente' : 'Nuevo Cliente'}
@@ -316,7 +335,7 @@ export default function Clients() {
                       required
                       value={formData.full_name}
                       onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                   </div>
                   <div>
@@ -327,7 +346,7 @@ export default function Clients() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                   </div>
                 </div>
@@ -340,7 +359,7 @@ export default function Clients() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                   />
                 </div>
 
@@ -352,7 +371,7 @@ export default function Clients() {
                     rows={3}
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     placeholder="Información adicional sobre el cliente..."
                   />
                 </div>

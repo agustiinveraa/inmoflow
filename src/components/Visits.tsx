@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Icons } from './Icons';
+import Dropdown from './Dropdown';
+import { useEntranceAnimation, useModalAnimation, useStaggerAnimation, useButtonAnimation, useFormAnimation, useCalendarAnimation } from '../hooks/useGSAP';
 
 interface Visit {
   id: string;
@@ -42,6 +44,25 @@ export default function Visits() {
     visit_time: '',
     notes: ''
   });
+
+  // Calculate todayVisits here
+  const todayVisits = visits.filter(visit => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+    
+    return visit.visit_date.startsWith(todayStr);
+  });
+
+  // GSAP Animation hooks
+  const pageRef = useEntranceAnimation();
+  const { overlayRef, modalRef } = useModalAnimation(showModal);
+  const todayVisitsRef = useStaggerAnimation([todayVisits.length]);
+  const newVisitButtonRef = useButtonAnimation();
+  const formRef = useFormAnimation();
+  const calendarRef = useCalendarAnimation();
 
   useEffect(() => {
     loadData();
@@ -295,16 +316,6 @@ export default function Visits() {
     });
   };
 
-  const todayVisits = visits.filter(visit => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const day = today.getDate().toString().padStart(2, '0');
-    const todayStr = `${year}-${month}-${day}`;
-    
-    return visit.visit_date.startsWith(todayStr);
-  });
-
   if (loading && !visits.length) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -317,7 +328,7 @@ export default function Visits() {
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div ref={pageRef as React.RefObject<HTMLDivElement>} className="flex-1 overflow-auto p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -326,7 +337,7 @@ export default function Visits() {
             <p className="text-black/60 dark:text-white/60">Gestiona las visitas a propiedades</p>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="flex items-center bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full p-1 relative overflow-hidden">
+            <div className="flex items-center bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full p-1 relative overflow-hidden min-w-[180px]">
               <div 
                 className={`absolute top-1 bottom-1 bg-black dark:bg-white rounded-full transition-all duration-300 ease-in-out ${
                   viewMode === 'calendar' ? 'left-1 right-1/2' : 'left-1/2 right-1'
@@ -334,7 +345,7 @@ export default function Visits() {
               />
               <button
                 onClick={() => setViewMode('calendar')}
-                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 z-10 ${
+                className={`relative px-1.5 py-2 rounded-full text-sm font-medium transition-all duration-300 z-10 flex-1 ${
                   viewMode === 'calendar' 
                     ? 'text-white dark:text-black' 
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
@@ -344,7 +355,7 @@ export default function Visits() {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 z-10 ${
+                className={`relative px-3 py-2 rounded-full text-sm font-medium transition-all duration-300 z-10 flex-1 ${
                   viewMode === 'list' 
                     ? 'text-white dark:text-black' 
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
@@ -354,6 +365,7 @@ export default function Visits() {
               </button>
             </div>
             <button
+              ref={newVisitButtonRef as React.RefObject<HTMLButtonElement>}
               onClick={() => {
                 setSelectedVisit(null);
                 setFormData({
@@ -365,7 +377,8 @@ export default function Visits() {
                 });
                 setShowModal(true);
               }}
-              className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 transition-all duration-200 hover:scale-105"
+              className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full"
+              style={{ transition: 'none' }} // Let GSAP handle the animations
             >
               <Icons.Plus className="w-4 h-4" />
               <span>Nueva Visita</span>
@@ -375,9 +388,9 @@ export default function Visits() {
 
         {/* Today's visits summary */}
         {todayVisits.length > 0 && (
-          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4 mb-6">
+          <div className=" border border-black/10 dark:border-white/10 rounded-xl p-4 mb-6">
             <h3 className="text-lg font-semibold text-black dark:text-white mb-3">Visitas de Hoy</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div ref={todayVisitsRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {todayVisits.map((visit) => (
                 <div key={visit.id} className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <Icons.Visits className="w-5 h-5 text-blue-600 dark:text-blue-400" />
@@ -397,7 +410,7 @@ export default function Visits() {
 
         {viewMode === 'calendar' ? (
           /* Calendar View */
-          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6">
+          <div className="rounded-xl p-6">
             {/* Calendar Header */}
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-black dark:text-white">
@@ -429,7 +442,7 @@ export default function Visits() {
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
+            <div ref={calendarRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-7 gap-1">
               {/* Day headers */}
               {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map((day) => (
                 <div key={day} className="h-8 flex items-center justify-center text-sm font-medium text-black/60 dark:text-white/60">
@@ -450,11 +463,12 @@ export default function Visits() {
                 return (
                   <div 
                     key={`day-${day}-${index}`} 
-                    className={`h-24 p-1 border border-black/10 dark:border-white/10 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors group ${isToday ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                    data-calendar-cell
+                    className={`h-32 p-1 rounded-lg cursor-pointer bg-[#EFECF0] dark:bg-[#17171A] hover:bg-black/5 dark:hover:bg-white/5 transition-colors group ${isToday ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
                     onClick={() => handleDayClick(date)}
                     title={dayVisits.length === 0 ? "Haz clic para crear una nueva visita" : `${dayVisits.length} visita${dayVisits.length > 1 ? 's' : ''} programada${dayVisits.length > 1 ? 's' : ''}`}
                   >
-                    <div className={`text-sm font-medium mb-1 ${isToday ? 'text-blue-600 dark:text-blue-400' : 'text-black dark:text-white'}`}>
+                    <div className={`text-sm p-2 font-medium mb-1 ${isToday ? 'text-blue-600 dark:text-blue-400' : 'text-black dark:text-white'}`}>
                       {day}
                     </div>
                     <div className="space-y-1">
@@ -605,8 +619,16 @@ export default function Visits() {
 
         {/* Modal */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 dark:bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+          <div 
+            ref={overlayRef as React.RefObject<HTMLDivElement>}
+            className="fixed inset-0 bg-black/50 dark:bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center"
+            style={{ opacity: 0 }} // Start invisible for GSAP
+          >
+            <div 
+              ref={modalRef as React.RefObject<HTMLDivElement>}
+              className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto"
+              style={{ opacity: 0, transform: 'scale(0.9) translateY(50px)' }} // Start invisible for GSAP
+            >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-black dark:text-white">
                   {selectedVisit ? 'Editar Visita' : 'Nueva Visita'}
@@ -629,43 +651,41 @@ export default function Visits() {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form ref={formRef as React.RefObject<HTMLFormElement>} onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-black dark:text-white mb-2">
                       Propiedad *
                     </label>
-                    <select
-                      required
+                    <Dropdown
                       value={formData.property_id}
-                      onChange={(e) => updateFormField('property_id', e.target.value)}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-                    >
-                      <option value="">Seleccionar propiedad</option>
-                      {properties.map(property => (
-                        <option key={property.id} value={property.id}>
-                          {property.title} - {property.address}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(value) => updateFormField('property_id', value)}
+                      options={[
+                        { value: '', label: 'Seleccionar propiedad' },
+                        ...properties.map(property => ({
+                          value: property.id,
+                          label: `${property.title} - ${property.address}`
+                        }))
+                      ]}
+                      placeholder="Seleccionar propiedad"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-black dark:text-white mb-2">
                       Cliente *
                     </label>
-                    <select
-                      required
+                    <Dropdown
                       value={formData.client_id}
-                      onChange={(e) => updateFormField('client_id', e.target.value)}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
-                    >
-                      <option value="">Seleccionar cliente</option>
-                      {clients.map(client => (
-                        <option key={client.id} value={client.id}>
-                          {client.full_name} {client.phone && `- ${client.phone}`}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(value) => updateFormField('client_id', value)}
+                      options={[
+                        { value: '', label: 'Seleccionar cliente' },
+                        ...clients.map(client => ({
+                          value: client.id,
+                          label: `${client.full_name}${client.phone ? ` - ${client.phone}` : ''}`
+                        }))
+                      ]}
+                      placeholder="Seleccionar cliente"
+                    />
                   </div>
                 </div>
 
@@ -679,7 +699,7 @@ export default function Visits() {
                       required
                       value={formData.visit_date || ''}
                       onChange={(e) => updateFormField('visit_date', e.target.value)}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                   </div>
                   <div>
@@ -690,7 +710,7 @@ export default function Visits() {
                       type="time"
                       value={formData.visit_time || ''}
                       onChange={(e) => updateFormField('visit_time', e.target.value)}
-                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                      className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     />
                   </div>
                 </div>
@@ -703,7 +723,7 @@ export default function Visits() {
                     rows={3}
                     value={formData.notes}
                     onChange={(e) => updateFormField('notes', e.target.value)}
-                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl text-black dark:text-white focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-transparent outline-none"
                     placeholder="Información adicional sobre la visita..."
                   />
                 </div>

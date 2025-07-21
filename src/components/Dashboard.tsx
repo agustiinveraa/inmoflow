@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { getUserAgencyId } from '../lib/agencyHelpers';
 import { Icons } from './Icons';
+import { useEntranceAnimation, useStaggerAnimation, useButtonAnimation } from '../hooks/useGSAP';
 
 interface DashboardStats {
   activeProperties: number;
@@ -29,6 +30,11 @@ export default function Dashboard() {
     recentActivity: []
   });
   const [loading, setLoading] = useState(true);
+
+  // GSAP Animation hooks
+  const pageRef = useEntranceAnimation();
+  const statsCardsRef = useStaggerAnimation([stats.activeProperties, stats.totalClients, stats.todayVisits, stats.totalVisits]);
+  const activityListRef = useStaggerAnimation([stats.recentActivity.length]);
 
   useEffect(() => {
     loadStats();
@@ -141,7 +147,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div ref={pageRef as React.RefObject<HTMLDivElement>} className="flex-1 overflow-auto p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -150,11 +156,11 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div ref={statsCardsRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Propiedades Activas */}
-          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
                 <Icons.Properties className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
               <span className="text-xs text-black/60 dark:text-white/60">Activas</span>
@@ -166,9 +172,9 @@ export default function Dashboard() {
           </div>
 
           {/* Total Clientes */}
-          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
                 <Icons.Clients className="w-5 h-5 text-green-600 dark:text-green-400" />
               </div>
               <span className="text-xs text-black/60 dark:text-white/60">Total</span>
@@ -180,9 +186,9 @@ export default function Dashboard() {
           </div>
 
           {/* Visitas Hoy */}
-          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
                 <Icons.Visits className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
               <span className="text-xs text-black/60 dark:text-white/60">Hoy</span>
@@ -194,9 +200,9 @@ export default function Dashboard() {
           </div>
 
           {/* Total Visitas */}
-          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+          <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
                 <Icons.Stats className="w-5 h-5 text-orange-600 dark:text-orange-400" />
               </div>
               <span className="text-xs text-black/60 dark:text-white/60">Total</span>
@@ -210,20 +216,20 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6"> 
           {/* Actividad Reciente */} 
-          <div className="lg:col-span-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+          <div className="lg:col-span-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-black dark:text-white">Actividad Reciente</h2>
               <button className="text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white px-3 py-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">
                 Ver todo
               </button>
             </div>
-            <div className="space-y-3">
+            <div ref={activityListRef as React.RefObject<HTMLDivElement>} className="space-y-3">
               {stats.recentActivity.length > 0 ? (
                 stats.recentActivity.map((activity) => {
                   const IconComponent = getActivityIcon(activity.type);
                   return (
-                    <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getActivityColor(activity.type)}`}>
+                    <div key={activity.id} className="flex items-center space-x-3 p-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getActivityColor(activity.type)}`}>
                         <IconComponent className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -248,7 +254,7 @@ export default function Dashboard() {
           {/* Panel Lateral */}
           <div className="space-y-4">
             {/* Acciones Rápidas */}
-            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
               <h3 className="text-sm font-semibold text-black dark:text-white mb-3">Acciones Rápidas</h3>
               <div className="space-y-2">
                 <button className="w-full flex items-center space-x-3 p-3 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 text-left hover:scale-[1.02]">
@@ -267,7 +273,7 @@ export default function Dashboard() {
             </div>
 
             {/* Estado del Sistema */}
-            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
+            <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-3xl p-4">
               <h3 className="text-sm font-semibold text-black dark:text-white mb-3">Estado del Sistema</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
