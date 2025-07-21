@@ -44,3 +44,47 @@ export const verifyResourceOwnership = async (
     return false;
   }
 };
+
+/**
+ * Verifica si el usuario autenticado es administrador de su agencia
+ * @returns Promise<boolean> - true si es administrador
+ */
+export const isAgencyAdmin = async (): Promise<boolean> => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return false;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('agency_admin')
+      .eq('id', user.id)
+      .single();
+
+    return profile?.agency_admin || false;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Obtiene información completa del usuario incluyendo datos de agencia
+ * @returns Promise<Object> - Información del usuario y agencia
+ */
+export const getUserProfile = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Usuario no autenticado');
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select(`
+      *,
+      agencies (
+        id,
+        name
+      )
+    `)
+    .eq('id', user.id)
+    .single();
+
+  return { user, profile };
+};

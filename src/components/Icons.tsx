@@ -17,6 +17,7 @@ import {
   MapPin,
   Square,
   X,
+  Lock,
   LucideProps
 } from 'lucide-react';
 
@@ -41,4 +42,5 @@ export const Icons = {
   MapPin: (props?: LucideProps) => <MapPin className="w-4 h-4" {...props} />,
   Square: (props?: LucideProps) => <Square className="w-4 h-4" {...props} />,
   X: (props?: LucideProps) => <X className="w-4 h-4" {...props} />,
+  Lock: (props?: LucideProps) => <Lock className="w-5 h-5" {...props} />,
 };

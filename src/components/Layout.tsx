@@ -1,7 +1,8 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { Icons } from './Icons';
 import { useProfile } from '../hooks/useProfile';
+import { isAgencyAdmin } from '../lib/agencyHelpers';
 
 interface LayoutProps {
   children: ReactNode;
@@ -13,13 +14,27 @@ interface LayoutProps {
 
 export default function Layout({ children, user, currentPage, onPageChange }: LayoutProps) {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { profile, loading: profileLoading } = useProfile(user);
+  
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      try {
+        const adminStatus = await isAgencyAdmin();
+        setIsAdmin(adminStatus);
+      } catch (error) {
+        console.error('Error verificando admin status:', error);
+      }
+    };
+    checkAdminStatus();
+  }, []);
   
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Icons.Dashboard },
     { id: 'properties', label: 'Propiedades', icon: Icons.Properties },
     { id: 'clients', label: 'Clientes', icon: Icons.Clients },
     { id: 'visits', label: 'Visitas', icon: Icons.Visits },
+    ...(isAdmin ? [{ id: 'users', label: 'Usuarios', icon: Icons.User }] : []),
     { id: 'settings', label: 'Ajustes', icon: Icons.Settings },
   ];
 
