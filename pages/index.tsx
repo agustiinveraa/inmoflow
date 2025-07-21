@@ -68,22 +68,41 @@ export default function Login() {
     if (error) {
       alert(error.message);
     } else if (data.user) {
-      // Crear perfil en la tabla profiles
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert([
-          {
-            id: data.user.id,
-            full_name: fullName,
-            phone: phone
-          }
-        ]);
-      
-      if (profileError) {
-        console.error('Error creando perfil:', profileError);
+      try {
+        // Crear una nueva agencia para el usuario
+        const { data: agencyData, error: agencyError } = await supabase
+          .from('agencies')
+          .insert([
+            {
+              name: `Agencia de ${fullName}`
+            }
+          ])
+          .select()
+          .single();
+
+        if (agencyError) throw agencyError;
+
+        // Crear perfil en la tabla profiles con la agencia asignada
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: data.user.id,
+              full_name: fullName,
+              phone: phone,
+              agency_id: agencyData.id
+            }
+          ]);
+        
+        if (profileError) {
+          console.error('Error creando perfil:', profileError);
+        }
+        
+        alert('Registro exitoso! Revisa tu email para confirmar tu cuenta.');
+      } catch (error) {
+        console.error('Error en el proceso de registro:', error);
+        alert('Error al crear la cuenta. Por favor intenta de nuevo.');
       }
-      
-      alert('Registro exitoso! Revisa tu email para confirmar tu cuenta.');
     }
   };
 

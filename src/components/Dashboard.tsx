@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { getUserAgencyId } from '../lib/agencyHelpers';
 import { Icons } from './Icons';
 
 interface DashboardStats {
@@ -35,30 +36,38 @@ export default function Dashboard() {
 
   const loadStats = async () => {
     try {
-      // Obtener estadísticas en paralelo
+      // Obtener la agencia del usuario autenticado
+      const agencyId = await getUserAgencyId();
+
+      // Obtener estadísticas en paralelo filtradas por agencia
       const [propertiesResult, clientsResult, visitsResult, todayVisitsResult] = await Promise.all([
-        supabase.from('properties').select('*', { count: 'exact' }),
-        supabase.from('clients').select('*', { count: 'exact' }),
-        supabase.from('visits').select('*', { count: 'exact' }),
-        supabase.from('visits').select('*', { count: 'exact' }).gte('visit_date', new Date().toISOString().split('T')[0])
+        supabase.from('properties').select('*', { count: 'exact' }).eq('agency_id', agencyId),
+        supabase.from('clients').select('*', { count: 'exact' }).eq('agency_id', agencyId),
+        supabase.from('visits').select('*', { count: 'exact' }).eq('agency_id', agencyId),
+        supabase.from('visits').select('*', { count: 'exact' })
+          .eq('agency_id', agencyId)
+          .gte('visit_date', new Date().toISOString().split('T')[0])
       ]);
 
-      // Obtener actividad reciente
+      // Obtener actividad reciente filtrada por agencia
       const { data: recentProperties } = await supabase
         .from('properties')
         .select('id, title, created_at, status')
+        .eq('agency_id', agencyId)
         .order('created_at', { ascending: false })
         .limit(3);
 
       const { data: recentClients } = await supabase
         .from('clients')
         .select('id, full_name, created_at')
+        .eq('agency_id', agencyId)
         .order('created_at', { ascending: false })
         .limit(3);
 
       const { data: recentVisits } = await supabase
         .from('visits')
         .select('id, visit_date, created_at')
+        .eq('agency_id', agencyId)
         .order('created_at', { ascending: false })
         .limit(3);
 

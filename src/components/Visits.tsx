@@ -49,6 +49,18 @@ export default function Visits() {
 
   const loadData = async () => {
     try {
+      // Obtener la agencia del usuario autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('agency_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
       const [visitsResult, propertiesResult, clientsResult] = await Promise.all([
         supabase
           .from('visits')
@@ -57,9 +69,10 @@ export default function Visits() {
             property:properties(title, address),
             client:clients(full_name, phone)
           `)
+          .eq('agency_id', profile.agency_id)
           .order('visit_date', { ascending: true }),
-        supabase.from('properties').select('id, title, address'),
-        supabase.from('clients').select('id, full_name, phone')
+        supabase.from('properties').select('id, title, address').eq('agency_id', profile.agency_id),
+        supabase.from('clients').select('id, full_name, phone').eq('agency_id', profile.agency_id)
       ]);
 
       if (visitsResult.error) throw visitsResult.error;
@@ -81,6 +94,18 @@ export default function Visits() {
     setLoading(true);
 
     try {
+      // Obtener la agencia del usuario autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('agency_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
       // Combine date and time into a single timestamp
       const visitDateTime = formData.visit_date + (formData.visit_time ? `T${formData.visit_time}:00` : 'T09:00:00');
       
@@ -88,14 +113,16 @@ export default function Visits() {
         property_id: formData.property_id,
         client_id: formData.client_id,
         visit_date: visitDateTime,
-        notes: formData.notes
+        notes: formData.notes,
+        agency_id: profile.agency_id
       };
 
       if (selectedVisit) {
         const { error } = await supabase
           .from('visits')
           .update(visitData)
-          .eq('id', selectedVisit.id);
+          .eq('id', selectedVisit.id)
+          .eq('agency_id', profile.agency_id); // Verificar que pertenece a la agencia
         if (error) throw error;
       } else {
         const { error } = await supabase
@@ -193,10 +220,23 @@ export default function Visits() {
   const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de que quieres eliminar esta visita?')) {
       try {
+        // Obtener la agencia del usuario autenticado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Usuario no autenticado');
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('agency_id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
         const { error } = await supabase
           .from('visits')
           .delete()
-          .eq('id', id);
+          .eq('id', id)
+          .eq('agency_id', profile.agency_id); // Verificar que pertenece a la agencia
         
         if (error) throw error;
         loadData();

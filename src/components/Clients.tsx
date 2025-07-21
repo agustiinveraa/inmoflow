@@ -31,9 +31,22 @@ export default function Clients() {
 
   const loadClients = async () => {
     try {
+      // Obtener la agencia del usuario autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('agency_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
       const { data, error } = await supabase
         .from('clients')
         .select('*')
+        .eq('agency_id', profile.agency_id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -50,16 +63,29 @@ export default function Clients() {
     setLoading(true);
 
     try {
+      // Obtener la agencia del usuario autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('agency_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
       if (selectedClient) {
         const { error } = await supabase
           .from('clients')
           .update(formData)
-          .eq('id', selectedClient.id);
+          .eq('id', selectedClient.id)
+          .eq('agency_id', profile.agency_id); // Verificar que pertenece a la agencia
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('clients')
-          .insert([formData]);
+          .insert([{ ...formData, agency_id: profile.agency_id }]);
         if (error) throw error;
       }
 
@@ -93,10 +119,23 @@ export default function Clients() {
   const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
       try {
+        // Obtener la agencia del usuario autenticado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Usuario no autenticado');
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('agency_id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
         const { error } = await supabase
           .from('clients')
           .delete()
-          .eq('id', id);
+          .eq('id', id)
+          .eq('agency_id', profile.agency_id); // Verificar que pertenece a la agencia
         
         if (error) throw error;
         loadClients();

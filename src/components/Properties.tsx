@@ -80,14 +80,28 @@ export default function Properties() {
 
   const loadProperties = async () => {
     try {
+      // Obtener la agencia del usuario autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('agency_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
       const [propertiesResult, clientsResult] = await Promise.all([
         supabase
           .from('properties')
           .select('*')
+          .eq('agency_id', profile.agency_id)
           .order('created_at', { ascending: false }),
         supabase
           .from('clients')
           .select('id, full_name, email, phone')
+          .eq('agency_id', profile.agency_id)
           .order('full_name', { ascending: true })
       ]);
 
@@ -109,6 +123,18 @@ export default function Properties() {
     setUploading(true);
 
     try {
+      // Obtener la agencia del usuario autenticado
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('agency_id')
+        .eq('id', user.id)
+        .single();
+
+      if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
       // Subir nuevas imágenes si hay archivos seleccionados
       let imageUrls = [...formData.images];
       if (uploadedFiles.length > 0) {
@@ -124,14 +150,16 @@ export default function Properties() {
         property_type: formData.property_type,
         status: formData.status,
         client_id: formData.client_id || null,
-        images: imageUrls
+        images: imageUrls,
+        agency_id: profile.agency_id
       };
 
       if (selectedProperty) {
         const { error } = await supabase
           .from('properties')
           .update(propertyData)
-          .eq('id', selectedProperty.id);
+          .eq('id', selectedProperty.id)
+          .eq('agency_id', profile.agency_id); // Verificar que pertenece a la agencia
         if (error) throw error;
       } else {
         const { error } = await supabase
@@ -198,10 +226,23 @@ export default function Properties() {
   const handleDelete = async (id: string) => {
     if (confirm('¿Estás seguro de que quieres eliminar esta propiedad?')) {
       try {
+        // Obtener la agencia del usuario autenticado
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Usuario no autenticado');
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('agency_id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile?.agency_id) throw new Error('Usuario sin agencia asignada');
+
         const { error } = await supabase
           .from('properties')
           .delete()
-          .eq('id', id);
+          .eq('id', id)
+          .eq('agency_id', profile.agency_id); // Verificar que pertenece a la agencia
         
         if (error) throw error;
         loadProperties();
