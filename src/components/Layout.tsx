@@ -39,11 +39,11 @@ export default function Layout({ children, user, currentPage, onPageChange }: La
   ];
 
   return (
-    <div className="flex min-h-screen animated-bg">
-      {/* Sidebar */}
-      <div className="w-64 app-sidebar flex flex-col relative py-4">
+    <div className="flex h-screen animated-bg">
+      {/* Sidebar - Fixed, no scroll */}
+      <div className="w-64 app-sidebar flex flex-col relative py-4 h-full overflow-hidden">
         {/* Header */}
-        <div className="px-4 py-2">
+        <div className="px-4 py-2 flex-shrink-0">
           <div className="flex items-center justify-between px-4">
             <div className="flex items-center space-x-3">
               {/* User Profile Image */}
@@ -75,7 +75,7 @@ export default function Layout({ children, user, currentPage, onPageChange }: La
         </div>
         
         {/* Navigation */}
-        <nav className="app-sidebar-nav flex-1 space-y-1 px-4 mt-4">
+        <nav className="app-sidebar-nav flex-1 space-y-1 px-4 mt-4 overflow-y-auto min-h-0">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;
             return (
@@ -95,7 +95,7 @@ export default function Layout({ children, user, currentPage, onPageChange }: La
         </nav>
         
         {/* Feedback Section */}
-        <div className="px-4 mt-auto mb-2">
+        <div className="px-4 mt-auto mb-2 flex-shrink-0">
           <button
             onClick={() => setIsFeedbackOpen(true)}
             className={`app-sidebar-item w-full text-left ${currentPage === 'feedback' ? 'active' : ''} relative`}
@@ -199,9 +199,11 @@ export default function Layout({ children, user, currentPage, onPageChange }: La
         </>
       )}
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        {children}
+      {/* Main Content - Scrollable */}
+      <div className="flex-1 h-full overflow-hidden">
+        <div className="h-full overflow-y-auto">
+          {children}
+        </div>
       </div>
     </div>
   );
