@@ -213,7 +213,7 @@ export default function Dashboard() {
           <div className="lg:col-span-2 bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-black dark:text-white">Actividad Reciente</h2>
-              <button className="text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white">
+              <button className="text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white px-3 py-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200">
                 Ver todo
               </button>
             </div>
@@ -251,15 +251,15 @@ export default function Dashboard() {
             <div className="bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-xl p-4">
               <h3 className="text-sm font-semibold text-black dark:text-white mb-3">Acciones Rápidas</h3>
               <div className="space-y-2">
-                <button className="w-full flex items-center space-x-3 p-3 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-left">
+                <button className="w-full flex items-center space-x-3 p-3 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 text-left hover:scale-[1.02]">
                   <Icons.Plus className="w-4 h-4 text-black dark:text-white" />
                   <span className="text-sm text-black dark:text-white">Nueva Propiedad</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-left">
+                <button className="w-full flex items-center space-x-3 p-3 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 text-left hover:scale-[1.02]">
                   <Icons.User className="w-4 h-4 text-black dark:text-white" />
                   <span className="text-sm text-black dark:text-white">Nuevo Cliente</span>
                 </button>
-                <button className="w-full flex items-center space-x-3 p-3 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-left">
+                <button className="w-full flex items-center space-x-3 p-3 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all duration-200 text-left hover:scale-[1.02]">
                   <Icons.Visits className="w-4 h-4 text-black dark:text-white" />
                   <span className="text-sm text-black dark:text-white">Programar Visita</span>
                 </button>

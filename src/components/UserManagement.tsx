@@ -174,7 +174,7 @@ export default function UserManagement() {
           </div>
           <button
             onClick={() => setShowCreateForm(!showCreateForm)}
-            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors"
+            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all"
           >
             <Icons.Plus className="w-4 h-4" />
             <span>Crear Usuario</span>
@@ -253,14 +253,14 @@ export default function UserManagement() {
                 <button
                   type="button"
                   onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 border border-black/10 dark:border-white/10 rounded-lg text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  className="px-4 py-2 border border-black/10 dark:border-white/10 rounded-full text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/5 hover:scale-[1.02] transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors disabled:opacity-50"
+                  className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all disabled:opacity-50"
                 >
                   {submitting ? 'Creando...' : 'Crear Usuario'}
                 </button>
@@ -314,14 +314,14 @@ export default function UserManagement() {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => toggleUserAdmin(user.id, user.agency_admin)}
-                          className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded"
+                          className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-110 transition-all"
                           title={user.agency_admin ? 'Quitar admin' : 'Hacer admin'}
                         >
                           <Icons.User className="w-4 h-4 text-black/60 dark:text-white/60" />
                         </button>
                         <button
                           onClick={() => deleteUser(user.id)}
-                          className="p-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                          className="p-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full hover:scale-110 transition-all"
                           title="Eliminar usuario"
                         >
                           <Icons.Trash className="w-4 h-4 text-red-600 dark:text-red-400" />

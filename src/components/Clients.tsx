@@ -174,7 +174,7 @@ export default function Clients() {
           </div>
           <button
             onClick={() => setShowModal(true)}
-            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors"
+            className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all"
           >
             <Icons.Plus className="w-4 h-4" />
             <span>Nuevo Cliente</span>
@@ -242,13 +242,13 @@ export default function Clients() {
                       <div className="flex justify-end space-x-2">
                         <button
                           onClick={() => handleEdit(client)}
-                          className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                          className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-110 transition-all"
                         >
                           <Icons.Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(client.id)}
-                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full hover:scale-110 transition-all"
                         >
                           <Icons.Delete className="w-4 h-4" />
                         </button>
@@ -271,7 +271,7 @@ export default function Clients() {
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors mx-auto"
+                className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all mx-auto"
               >
                 <Icons.Plus className="w-4 h-4" />
                 <span>Nuevo Cliente</span>
@@ -299,7 +299,7 @@ export default function Clients() {
                       notes: ''
                     });
                   }}
-                  className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-110 transition-all"
                 >
                   <Icons.X className="w-5 h-5" />
                 </button>
@@ -370,14 +370,14 @@ export default function Clients() {
                         notes: ''
                       });
                     }}
-                    className="px-4 py-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                    className="px-4 py-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-[1.02] transition-all"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors disabled:opacity-50"
+                    className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all disabled:opacity-50"
                   >
                     {loading && <div className="w-4 h-4 border-2 border-white dark:border-black border-t-transparent rounded-full animate-spin"></div>}
                     <span>{selectedClient ? 'Actualizar' : 'Crear'}</span>

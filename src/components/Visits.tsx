@@ -326,12 +326,17 @@ export default function Visits() {
             <p className="text-black/60 dark:text-white/60">Gestiona las visitas a propiedades</p>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="flex items-center bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-lg p-1">
+            <div className="flex items-center bg-white dark:bg-black border border-black/10 dark:border-white/10 rounded-full p-1 relative overflow-hidden">
+              <div 
+                className={`absolute top-1 bottom-1 bg-black dark:bg-white rounded-full transition-all duration-300 ease-in-out ${
+                  viewMode === 'calendar' ? 'left-1 right-1/2' : 'left-1/2 right-1'
+                }`}
+              />
               <button
                 onClick={() => setViewMode('calendar')}
-                className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 z-10 ${
                   viewMode === 'calendar' 
-                    ? 'bg-black dark:bg-white text-white dark:text-black' 
+                    ? 'text-white dark:text-black' 
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
@@ -339,9 +344,9 @@ export default function Visits() {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 z-10 ${
                   viewMode === 'list' 
-                    ? 'bg-black dark:bg-white text-white dark:text-black' 
+                    ? 'text-white dark:text-black' 
                     : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                 }`}
               >
@@ -360,7 +365,7 @@ export default function Visits() {
                 });
                 setShowModal(true);
               }}
-              className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors"
+              className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 transition-all duration-200 hover:scale-105"
             >
               <Icons.Plus className="w-4 h-4" />
               <span>Nueva Visita</span>
@@ -404,19 +409,19 @@ export default function Visits() {
                 </div>
                 <button
                   onClick={() => navigateMonth('prev')}
-                  className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-110 transition-all"
                 >
                   <Icons.ChevronDown className="w-4 h-4 rotate-90" />
                 </button>
                 <button
                   onClick={() => setCurrentDate(new Date())}
-                  className="px-3 py-1 text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                  className="px-3 py-1 text-sm text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-[1.02] transition-all"
                 >
                   Hoy
                 </button>
                 <button
                   onClick={() => navigateMonth('next')}
-                  className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-110 transition-all"
                 >
                   <Icons.ChevronDown className="w-4 h-4 -rotate-90" />
                 </button>
@@ -550,13 +555,13 @@ export default function Visits() {
                           <div className="flex justify-end space-x-2">
                             <button
                               onClick={() => handleEdit(visit)}
-                              className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                              className="p-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-110 transition-all"
                             >
                               <Icons.Edit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDelete(visit.id)}
-                              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full hover:scale-110 transition-all"
                             >
                               <Icons.Delete className="w-4 h-4" />
                             </button>
@@ -587,7 +592,7 @@ export default function Visits() {
                       });
                       setShowModal(true);
                     }}
-                    className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors mx-auto"
+                    className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all mx-auto"
                   >
                     <Icons.Plus className="w-4 h-4" />
                     <span>Nueva Visita</span>
@@ -717,14 +722,14 @@ export default function Visits() {
                         notes: ''
                       });
                     }}
-                    className="px-4 py-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors"
+                    className="px-4 py-2 text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-full hover:scale-[1.02] transition-all"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg hover:bg-black/80 dark:hover:bg-white/80 transition-colors disabled:opacity-50"
+                    className="flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full hover:bg-black/80 dark:hover:bg-white/80 hover:scale-[1.02] transition-all disabled:opacity-50"
                   >
                     {loading && <div className="w-4 h-4 border-2 border-white dark:border-black border-t-transparent rounded-full animate-spin"></div>}
                     <span>{selectedVisit ? 'Actualizar' : 'Crear'}</span>

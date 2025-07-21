@@ -178,8 +178,10 @@ export default function ImageUpload({ images, onImagesChange, maxImages = 5 }: I
                   fontSize: '12px',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease'
                 }}
+                className="hover:bg-red-600 hover:scale-110"
                 title="Eliminar imagen"
               >
                 ✕
