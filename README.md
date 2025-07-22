@@ -175,3 +175,6 @@ Para dudas o sugerencias sobre el MVP, puedes:
 ---
 
 **¡Tu CRM inmobiliario está listo para usar!** 🎉
+<img width="1920" height="1302" alt="clientes-visitas" src="https://github.com/user-attachments/assets/7515b5f5-7ee5-46d6-9870-9d0d3028f368" />
+<img width="1920" height="1440" alt="propiedades" src="https://github.com/user-attachments/assets/b6b23256-13ce-43b0-aec1-a99ab674ae68" />
+<img width="1502" height="979" alt="dashboard" src="https://github.com/user-attachments/assets/0f73f49e-f711-41d0-9108-c3b0002b3dc3" />
